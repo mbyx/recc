@@ -1,3 +1,5 @@
+# By: Abdul Muiz, EE-24122
+
 import html
 from typing import Any
 
@@ -24,23 +26,22 @@ def extract_title_from_id(anime_id: int) -> str:
     # unescape it.
     return html.unescape(title_series.iloc[0])
 
+def get_genres_of(anime_id: int) -> list[str]:
+    """Return a list of genres of an anime by its id."""
+    return set(
+            anime_names.loc[anime_names["anime_id"] == anime_id, "genre"]
+            .to_list()[0]
+            .split(", ")
+    )
 
 def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
-    """Determine how similar two anime are by their genres.
+    """Determine how similar two anime ids are by their genres.
 
     Returns a floating point number between 0.0 and 1.0, with 1.0 being completely similar.
     """
     try:
-        first_anime_genres = set(
-            anime_names.loc[anime_names["anime_id"] == first_anime_id, "genre"]
-            .to_list()[0]
-            .split(", ")
-        )
-        second_anime_genres = set(
-            anime_names.loc[anime_names["anime_id"] == second_anime_id, "genre"]
-            .to_list()[0]
-            .split(", ")
-        )
+        first_anime_genres = get_genres_of(first_anime_id)
+        second_anime_genres = get_genres_of(second_anime_id)
 
         return len(first_anime_genres & second_anime_genres) / len(
             first_anime_genres | second_anime_genres
@@ -49,6 +50,16 @@ def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
         print("One or both of those animes are not in the database!")
 
     return 0.0
+
+
+def genre_similarity_by_titles(first_anime_title: str, second_anime_title: str) -> float:
+    """Determine how similar two anime titles are by their genres.
+
+    Returns a floating point number between 0.0 and 1.0, with 1.0 being completely similar.
+    """
+    first_anime_id = extract_title_from_id(first_anime_title)
+    second_anime_id = extract_title_from_id(second_anime_title)
+    return genre_similarity(first_anime_id, second_anime_id)
 
 
 def merge_datasets() -> None:
