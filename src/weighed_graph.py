@@ -1,17 +1,18 @@
 # By: Huzaim Ali Khan, EE-24122
 
+
 class Node:
     def __init__(self, id, node_type, data=None):
-        self.id = id #Unique identifier (e.g., 'User_1', 'Naruto')
-        self.type = node_type #Is the node a 'user' or 'anime'?
-        self.data = data or {} #for storing additional info like genre, score, etc.
+        self.id = id  # Unique identifier (e.g., 'User_1', 'Naruto')
+        self.type = node_type  # Is the node a 'user' or 'anime'?
+        self.data = data or {}  # for storing additional info like genre, score, etc.
 
 
 class Edge:
     def __init__(self, source, target, weight):
-        self.source = source #Node ID
-        self.target = target #Node ID
-        self.weight = weight #Rating, similarity, etc.
+        self.source = source  # Node ID
+        self.target = target  # Node ID
+        self.weight = weight  # Rating, similarity, etc.
 
 
 class Graph:
@@ -19,7 +20,6 @@ class Graph:
         self.nodes = {}
         self.edges = []
         self.adjacency = {}
-
 
     def add_node(self, id, node_type, data=None):
         if id not in self.nodes:

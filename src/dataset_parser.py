@@ -11,8 +11,7 @@ import pandas as pd
 # It also contains the genres of the anime.
 anime_names = pd.read_csv("datasets/anime_cleaned.csv")
 # This is a list of users who have watched specific anime and rated them.
-# This is only the first 2000 entries of the 2 GB dataset.
-anime_lists = pd.read_csv("datasets/animelists_cleaned_small.csv")
+anime_lists = pd.read_csv("datasets/animelists_cleaned_not_small.csv")
 
 
 def extract_title_from_id(anime_id: int) -> str:
@@ -26,13 +25,18 @@ def extract_title_from_id(anime_id: int) -> str:
     # unescape it.
     return html.unescape(title_series.iloc[0])
 
-def get_genres_of(anime_id: int) -> list[str]:
+
+def get_genres_of(anime_id: int) -> set[str]:
     """Return a list of genres of an anime by its id."""
-    return set(
-            anime_names.loc[anime_names["anime_id"] == anime_id, "genre"]
-            .to_list()[0]
+    genres = anime_names.loc[anime_names["anime_id"] == anime_id, "genre"].to_list()
+    if genres and not isinstance(genres[0], float):
+        return set(
+            genres[0]
             .split(", ")
-    )
+        )
+    else:
+        return set()
+
 
 def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
     """Determine how similar two anime ids are by their genres.
@@ -43,9 +47,11 @@ def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
         first_anime_genres = get_genres_of(first_anime_id)
         second_anime_genres = get_genres_of(second_anime_id)
 
-        return len(first_anime_genres & second_anime_genres) / len(
-            first_anime_genres | second_anime_genres
-        )
+        merged = len(first_anime_genres | second_anime_genres)
+        if merged != 0:
+            return len(first_anime_genres & second_anime_genres) / merged
+        else:
+            return 0
     except IndexError:
         print("One or both of those animes are not in the database!")
 
@@ -54,16 +60,19 @@ def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
 
 def extract_id_from_title(anime_title: str) -> int:
     """Extract the anime id of an anime, given its anime title."""
+    # Unescape to ensure consistency with extract_title_from_id
+    anime_title = html.unescape(anime_title)
     id_series = anime_names.loc[anime_names["title_english"] == anime_title, "anime_id"]
-    
-    #Check if the series is empty
-    if id_series.empty:
-      print(anime_title," not found.")
-      return -1
-    return int(id_series.iloc[0])
-  
 
-def genre_similarity_by_titles(first_anime_title: str, second_anime_title: str) -> float:
+    if id_series.empty:
+        print(anime_title, "not found.")
+        return -1
+    return int(id_series.iloc[0])
+
+
+def genre_similarity_by_titles(
+    first_anime_title: str, second_anime_title: str
+) -> float:
     """Determine how similar two anime titles are by their genres.
 
     Returns a floating point number between 0.0 and 1.0, with 1.0 being completely similar.
@@ -79,7 +88,10 @@ def merge_datasets() -> None:
     anime_lists = anime_lists[["username", "anime_id", "my_score"]]
     # We create a new column that is made by extracting the title from the id in another column.
     anime_lists["title_english"] = anime_lists["anime_id"].apply(extract_title_from_id)
-    anime_lists["genre"] = anime_names["genre"].apply(
+    anime_lists = anime_lists.merge(
+        anime_names[["anime_id", "genre"]], on="anime_id", how="left"
+    )
+    anime_lists["genre"] = anime_lists["genre"].apply(
         lambda x: x.split(", ") if isinstance(x, str) else []
     )
     # `extract_title_from_id` returns "" if it couldn't find a title, so we filter them out.
