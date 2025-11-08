@@ -52,13 +52,24 @@ def genre_similarity(first_anime_id: int, second_anime_id: int) -> float:
     return 0.0
 
 
+def extract_id_from_title(anime_title: str) -> int:
+    """Extract the anime id of an anime, given its anime title."""
+    id_series = anime_names.loc[anime_names["title_english"] == anime_title, "anime_id"]
+    
+    #Check if the series is empty
+    if id_series.empty:
+      print(anime_title," not found.")
+      return -1
+    return int(id_series.iloc[0])
+  
+
 def genre_similarity_by_titles(first_anime_title: str, second_anime_title: str) -> float:
     """Determine how similar two anime titles are by their genres.
 
     Returns a floating point number between 0.0 and 1.0, with 1.0 being completely similar.
     """
-    first_anime_id = extract_title_from_id(first_anime_title)
-    second_anime_id = extract_title_from_id(second_anime_title)
+    first_anime_id = extract_id_from_title(first_anime_title)
+    second_anime_id = extract_id_from_title(second_anime_title)
     return genre_similarity(first_anime_id, second_anime_id)
 
 
