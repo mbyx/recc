@@ -35,7 +35,7 @@ def Recommendation_algorithm(
                     sim = similarity_cache[node]
                 else:
                     sim = 0.0
-                Neighbour_weight.append(0.5 * score + 0.5 * sim)
+                Neighbour_weight.append(0.20 * score + 0.8 * sim)
 
             if sum(Neighbour_weight) == 0:
                 Curr_Node_id = random.choice(Neighbour_id)
