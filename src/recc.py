@@ -26,3 +26,15 @@ for user, watched_anime in details.items():
         graph.add_edge(user, title, score)
         # Graph is unidirectional.
         graph.add_edge(title, user, score)
+
+naruto_title = dsp.extract_title_from_id(NARUTO_ANIME_ID)
+if naruto_title:
+    print(f"\nFinding recommendations for: {naruto_title} (Random Walk)...")
+    recs = ra.Recommendation_algorithm(naruto_title, graph)
+    
+    if recs:
+        print("--- Top 10 Recommendations (Random Walk) ---")
+        for i, anime in enumerate(recs, 1):
+            print(f"{i}. {anime}")
+    else:
+        print(f"Could not find any recommendations for {naruto_title}.")
