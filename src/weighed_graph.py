@@ -3,7 +3,7 @@
 
 class Node:
     def __init__(self, id, node_type, data=None):
-        self.id = id  # Unique identifier (e.g., 'User_1', 'Naruto')
+        self.id = id  # Unique anime identifier or username.
         self.type = node_type  # Is the node a 'user' or 'anime'?
         self.data = data or {}  # for storing additional info like genre, score, etc.
 

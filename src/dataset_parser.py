@@ -30,10 +30,7 @@ def get_genres_of(anime_id: int) -> set[str]:
     """Return a list of genres of an anime by its id."""
     genres = anime_names.loc[anime_names["anime_id"] == anime_id, "genre"].to_list()
     if genres and not isinstance(genres[0], float):
-        return set(
-            genres[0]
-            .split(", ")
-        )
+        return set(genres[0].split(", "))
     else:
         return set()
 

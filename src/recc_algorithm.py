@@ -6,32 +6,34 @@ import random
 from collections import defaultdict
 
 
-def Recommendation_algorithm(
-    Input_anime, Graph, Top_n=10, num_walks=1000, walk_lenght=6
+def recommendation_algorithm(
+    input_anime, graph, top_n=10, num_walks=1000, walk_length=6
 ):
-    landings = defaultdict(int)
-    if Input_anime not in Graph.nodes or Graph.nodes[Input_anime].type != "anime":
-        print(f"Error {Input_anime} not found in the graph")
+    if input_anime not in graph.nodes or graph.nodes[input_anime].type != "anime":
+        print(f"Error {input_anime} not found in the graph")
         return []
+
+    landings = defaultdict(int)
     similarity_cache = {}
-    for i in range(num_walks):
-        Curr_Node_id = Input_anime
-        for _ in range(walk_lenght):
+
+    for _ in range(num_walks):
+        Curr_Node_id = input_anime
+        for _ in range(walk_length):
             try:
-                neighbour = Graph.get_neighbors(Curr_Node_id)
+                neighbour = graph.get_neighbors(Curr_Node_id)
             except KeyError:
                 break
 
             if not neighbour:
                 break
 
-			# Computing similarities is expensive, do it just once per anime.
-            Neighbour_id = [node for node, weight in neighbour]
+            # Computing similarities is expensive, do it just once per anime.
+            Neighbour_id = [node for node, _ in neighbour]
             Neighbour_weight = []
             for node, score in neighbour:
-                if Graph.nodes[node].type == "anime":
+                if graph.nodes[node].type == "anime":
                     if node not in similarity_cache:
-                        similarity_cache[node] = dsp.genre_similarity(Input_anime, node)
+                        similarity_cache[node] = dsp.genre_similarity(input_anime, node)
                     sim = similarity_cache[node]
                 else:
                     sim = 0.0
@@ -45,9 +47,9 @@ def Recommendation_algorithm(
                 )[0]
 
         if (
-            Curr_Node_id != Input_anime
-            and Curr_Node_id in Graph.nodes
-            and Graph.nodes[Curr_Node_id].type == "anime"
+            Curr_Node_id != input_anime
+            and Curr_Node_id in graph.nodes
+            and graph.nodes[Curr_Node_id].type == "anime"
         ):
             landings[Curr_Node_id] += 1
 
@@ -55,4 +57,4 @@ def Recommendation_algorithm(
         landings.items(), key=lambda item: item[1], reverse=True
     )
 
-    return [anime_title for anime_title, score in sorted_recommendations[:Top_n]]
+    return [anime_title for anime_title, _ in sorted_recommendations[:top_n]]

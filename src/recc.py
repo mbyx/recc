@@ -40,7 +40,7 @@ if anime_title:
         print(f"Could not find any recommendations for {anime_title}.")
 
 # Example output:
-'''
+"""
 Finding recommendations for: Bleach (Random Walk)...
 --- Top 10 Recommendations (Random Walk) ---
 1. One Piece
@@ -53,4 +53,4 @@ Finding recommendations for: Bleach (Random Walk)...
 8. Ouran High School Host Club
 9. Rurouni Kenshin
 10. Darker than Black
-'''
+"""
