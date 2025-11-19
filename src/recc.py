@@ -30,7 +30,7 @@ anime_id = BLEACH_ANIME_ID
 anime_title = dsp.extract_title_from_id(anime_id)
 if anime_title:
     print(f"\nFinding recommendations for: {anime_title} (Random Walk)...")
-    recs = ra.Recommendation_algorithm(anime_id, graph, num_walks=5000)
+    recs = ra.recommendation_algorithm(anime_id, graph, num_walks=5000)
 
     if recs:
         print("--- Top 10 Recommendations (Random Walk) ---")
